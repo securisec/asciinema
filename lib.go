@@ -10,7 +10,6 @@ import (
 // Options options to pass to various commands.
 // These are common flags passed to the asciinema cli.
 type Options struct {
-	Command string
 	Title   string
 	MaxWait float64
 	Yes     bool
@@ -22,7 +21,6 @@ func New(opts ...Options) *Options {
 	var o Options
 	if len(opts) == 0 {
 		return &Options{
-			Command: "",
 			Title:   "",
 			MaxWait: 1.0,
 			Yes:     false,
@@ -31,9 +29,6 @@ func New(opts ...Options) *Options {
 	}
 
 	options := opts[0]
-	if options.Command == "" {
-		options.Command = os.Getenv("SHELL")
-	}
 
 	o = options
 	return &o
@@ -62,7 +57,7 @@ func New(opts ...Options) *Options {
 
 // Rec records the terminal and returns the asciicast and error.
 func (o *Options) Rec() ([]byte, error) {
-	command := util.FirstNonBlank(o.Command, cfg.RecordCommand())
+	command := util.FirstNonBlank(os.Getenv("SHELL"), cfg.RecordCommand())
 	title := o.Title
 	assumeYes := o.Yes
 
