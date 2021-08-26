@@ -70,3 +70,24 @@ func (o *Options) Rec() ([]byte, error) {
 	cmd := commands.NewRecordCommand(api, env)
 	return cmd.Execute(command, title, assumeYes, maxWait)
 }
+
+type AsciinemaV1 struct {
+	Version  int64      `json:"version"`
+	Width    int64      `json:"width"`
+	Height   int64      `json:"height"`
+	Duration float64    `json:"duration"`
+	Command  string     `json:"command"`
+	Title    string     `json:"title"`
+	Env      Env        `json:"env"`
+	Stdout   [][]Stdout `json:"stdout"`
+}
+
+type Env struct {
+	Term  string `json:"TERM"`
+	Shell string `json:"SHELL"`
+}
+
+type Stdout struct {
+	Double *float64
+	String *string
+}
