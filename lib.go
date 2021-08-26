@@ -61,7 +61,7 @@ func New(opts ...Options) *Options {
 // }
 
 // Rec records the terminal and returns the asciicast and error.
-func (o *Options) Rec(filename string) ([]byte, error) {
+func (o *Options) Rec() ([]byte, error) {
 	command := util.FirstNonBlank(o.Command, cfg.RecordCommand())
 	title := o.Title
 	assumeYes := o.Yes
@@ -73,5 +73,5 @@ func (o *Options) Rec(filename string) ([]byte, error) {
 
 	maxWait := o.MaxWait
 	cmd := commands.NewRecordCommand(api, env)
-	return cmd.Execute(command, title, assumeYes, maxWait, filename)
+	return cmd.Execute(command, title, assumeYes, maxWait)
 }

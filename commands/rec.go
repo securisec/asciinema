@@ -21,7 +21,7 @@ func NewRecordCommand(api api.API, env map[string]string) *RecordCommand {
 	}
 }
 
-func (c *RecordCommand) Execute(command, title string, assumeYes bool, maxWait float64, filename string) ([]byte, error) {
+func (c *RecordCommand) Execute(command, title string, assumeYes bool, maxWait float64) ([]byte, error) {
 	// var upload bool
 	// var err error
 
@@ -35,7 +35,7 @@ func (c *RecordCommand) Execute(command, title string, assumeYes bool, maxWait f
 	// 	upload = true
 	// }
 
-	return c.Recorder.Record(filename, command, title, maxWait, assumeYes, c.Env)
+	return c.Recorder.Record(command, title, maxWait, assumeYes, c.Env)
 
 	// if upload {
 	// 	if !assumeYes {

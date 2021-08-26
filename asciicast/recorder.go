@@ -17,7 +17,7 @@ const (
 )
 
 type Recorder interface {
-	Record(string, string, string, float64, bool, map[string]string) ([]byte, error)
+	Record(string, string, float64, bool, map[string]string) ([]byte, error)
 }
 
 type AsciicastRecorder struct {
@@ -56,7 +56,7 @@ func (r *AsciicastRecorder) checkTerminalSize() chan<- bool {
 	return doneChan
 }
 
-func (r *AsciicastRecorder) Record(path, command, title string, maxWait float64, assumeYes bool, env map[string]string) ([]byte, error) {
+func (r *AsciicastRecorder) Record(command, title string, maxWait float64, assumeYes bool, env map[string]string) ([]byte, error) {
 	// TODO: touch savePath to ensure writing is possible
 
 	rows, cols, _ := r.Terminal.Size()
