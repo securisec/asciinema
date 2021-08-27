@@ -21,7 +21,7 @@ func NewRecordCommand(api api.API, env map[string]string) *RecordCommand {
 	}
 }
 
-func (c *RecordCommand) Execute(command, title string, assumeYes bool, maxWait float64) ([]byte, error) {
+func (c *RecordCommand) Execute(command, title string, assumeYes bool, maxWait float64) (asciicast.Asciicast, error) {
 	// var upload bool
 	// var err error
 

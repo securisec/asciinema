@@ -3,6 +3,7 @@ package asciinema
 import (
 	"os"
 
+	"github.com/securisec/asciinema/asciicast"
 	"github.com/securisec/asciinema/commands"
 	"github.com/securisec/asciinema/util"
 )
@@ -34,14 +35,12 @@ func New(opts ...Options) *Options {
 	return &o
 }
 
-// Play plays the given filename.
-// the filename can be a local file or a remote file.
-// TODO not yet implemented
-// func (o *Options) Play(filename string) error {
-// 	return errors.New("not implemented") // TODO
-// 	cmd := commands.NewPlayCommand()
-// 	return cmd.Execute(filename, o.MaxWait)
-// }
+// Play plays the given asciicast. Use asciicast.Asciicast to unmarshal
+// read from the asciicast file.
+func (o *Options) Play(cast *asciicast.Asciicast) error {
+	cmd := commands.NewPlayCommand()
+	return cmd.Execute(cast, o.MaxWait)
+}
 
 // // Auth generates a local token and provides an auth URL.
 // func (o *Options) Auth() error {
@@ -56,7 +55,7 @@ func New(opts ...Options) *Options {
 // }
 
 // Rec records the terminal and returns the asciicast and error.
-func (o *Options) Rec() ([]byte, error) {
+func (o *Options) Rec() (asciicast.Asciicast, error) {
 	command := util.FirstNonBlank(os.Getenv("SHELL"), cfg.RecordCommand())
 	title := o.Title
 	assumeYes := o.Yes
@@ -69,25 +68,4 @@ func (o *Options) Rec() ([]byte, error) {
 	maxWait := o.MaxWait
 	cmd := commands.NewRecordCommand(api, env)
 	return cmd.Execute(command, title, assumeYes, maxWait)
-}
-
-type AsciinemaV1 struct {
-	Version  int64      `json:"version"`
-	Width    int64      `json:"width"`
-	Height   int64      `json:"height"`
-	Duration float64    `json:"duration"`
-	Command  string     `json:"command"`
-	Title    string     `json:"title"`
-	Env      Env        `json:"env"`
-	Stdout   [][]Stdout `json:"stdout"`
-}
-
-type Env struct {
-	Term  string `json:"TERM"`
-	Shell string `json:"SHELL"`
-}
-
-type Stdout struct {
-	Double *float64
-	String *string
 }

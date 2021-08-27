@@ -1,7 +1,6 @@
 package asciicast
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"os/signal"
@@ -17,7 +16,7 @@ const (
 )
 
 type Recorder interface {
-	Record(string, string, float64, bool, map[string]string) ([]byte, error)
+	Record(string, string, float64, bool, map[string]string) (Asciicast, error)
 }
 
 type AsciicastRecorder struct {
@@ -56,7 +55,7 @@ func (r *AsciicastRecorder) checkTerminalSize() chan<- bool {
 	return doneChan
 }
 
-func (r *AsciicastRecorder) Record(command, title string, maxWait float64, assumeYes bool, env map[string]string) ([]byte, error) {
+func (r *AsciicastRecorder) Record(command, title string, maxWait float64, assumeYes bool, env map[string]string) (Asciicast, error) {
 	// TODO: touch savePath to ensure writing is possible
 
 	rows, cols, _ := r.Terminal.Size()
@@ -78,7 +77,7 @@ func (r *AsciicastRecorder) Record(command, title string, maxWait float64, assum
 
 	err := r.Terminal.Record(command, stdout)
 	if err != nil {
-		return nil, err
+		return Asciicast{}, err
 	}
 
 	stdout.Close()
@@ -97,7 +96,7 @@ func (r *AsciicastRecorder) Record(command, title string, maxWait float64, assum
 		env,
 	)
 
-	return json.Marshal(asciicast)
+	return *asciicast, nil
 	// err = Save(asciicast, path)
 	// if err != nil {
 	// 	return err

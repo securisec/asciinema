@@ -2,7 +2,6 @@ package commands
 
 import (
 	"github.com/securisec/asciinema/asciicast"
-	"github.com/securisec/asciinema/util"
 )
 
 type PlayCommand struct {
@@ -15,17 +14,6 @@ func NewPlayCommand() *PlayCommand {
 	}
 }
 
-func (c *PlayCommand) Execute(url string, maxWait float64) error {
-	var cast *asciicast.Asciicast
-	var err error
-
-	util.WithSpinner(500, func() {
-		cast, err = asciicast.Load(url)
-	})
-
-	if err != nil {
-		return err
-	}
-
+func (c *PlayCommand) Execute(cast *asciicast.Asciicast, maxWait float64) error {
 	return c.Player.Play(cast, maxWait)
 }
