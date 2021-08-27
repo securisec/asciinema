@@ -69,7 +69,7 @@ func (r *AsciicastRecorder) Record(command, title string, maxWait float64, assum
 			doneChan <- true
 		}
 	}
-
+	os.Setenv("ASCIINEMA_RECORDING", "true")
 	util.Printf("Asciicast recording started.")
 	util.Printf(`Hit Ctrl-D or type "exit" to finish.`)
 
@@ -96,6 +96,7 @@ func (r *AsciicastRecorder) Record(command, title string, maxWait float64, assum
 		env,
 	)
 
+	os.Unsetenv("ASCIINEMA_RECORDING")
 	return *asciicast, nil
 	// err = Save(asciicast, path)
 	// if err != nil {
