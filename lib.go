@@ -1,8 +1,12 @@
 package asciinema
 
 import (
+	"fmt"
 	"os"
+	"os/signal"
+	"strings"
 
+	asciinemaapi "github.com/securisec/asciinema/api"
 	"github.com/securisec/asciinema/asciicast"
 	"github.com/securisec/asciinema/commands"
 	"github.com/securisec/asciinema/util"
@@ -38,24 +42,14 @@ func New(opts ...Options) *Options {
 // Play plays the given asciicast. Use asciicast.Asciicast to unmarshal
 // read from the asciicast file.
 func (o *Options) Play(cast *asciicast.Asciicast) error {
+	initAsciinema()
 	cmd := commands.NewPlayCommand()
 	return cmd.Execute(cast, o.MaxWait)
 }
 
-// // Auth generates a local token and provides an auth URL.
-// func (o *Options) Auth() error {
-// 	cmd := commands.NewAuthCommand(api)
-// 	return cmd.Execute()
-// }
-
-// // Upload uploads the given file to asciinema.
-// func (o *Options) Upload(filename string) error {
-// 	cmd := commands.NewUploadCommand(api)
-// 	return cmd.Execute(filename)
-// }
-
 // Rec records the terminal and returns the asciicast and error.
 func (o *Options) Rec() (asciicast.Asciicast, error) {
+	initAsciinema()
 	command := util.FirstNonBlank(os.Getenv("SHELL"), cfg.RecordCommand())
 	title := o.Title
 	assumeYes := o.Yes
@@ -69,3 +63,52 @@ func (o *Options) Rec() (asciicast.Asciicast, error) {
 	cmd := commands.NewRecordCommand(api, env)
 	return cmd.Execute(command, title, assumeYes, maxWait)
 }
+
+func initAsciinema() {
+	env = environment()
+
+	if !util.IsUtf8Locale(env) {
+		fmt.Println("asciinema needs a UTF-8 native locale to run. Check the output of `locale` command.")
+		os.Exit(1)
+	}
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		<-c
+		showCursorBack()
+		os.Exit(1)
+	}()
+	defer showCursorBack()
+
+	cfg, err = util.GetConfig(env)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	api = asciinemaapi.New(cfg.ApiUrl(), env["USER"], cfg.ApiToken(), Version)
+}
+
+const Version = "1.2.0"
+
+func environment() map[string]string {
+	env := map[string]string{}
+
+	for _, keyval := range os.Environ() {
+		pair := strings.SplitN(keyval, "=", 2)
+		env[pair[0]] = pair[1]
+	}
+
+	return env
+}
+
+func showCursorBack() {
+	fmt.Fprintf(os.Stdout, "\x1b[?25h")
+}
+
+var (
+	env map[string]string
+	cfg *util.Config
+	api *asciinemaapi.AsciinemaAPI
+	err error
+)
