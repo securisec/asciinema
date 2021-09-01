@@ -18,6 +18,7 @@ func NewPlayer() Player {
 	return &AsciicastPlayer{Terminal: terminal.NewTerminal()}
 }
 
+// TODO vv sleep time as lib is not right. correct in asciinema-player
 func (r *AsciicastPlayer) Play(asciicast *Asciicast, maxWait float64) error {
 	for _, frame := range asciicast.Stdout {
 		delay := frame.Time

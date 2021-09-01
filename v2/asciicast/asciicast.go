@@ -35,7 +35,7 @@ type Asciicast struct {
 	Stdout    []Frame  `json:"stdout"`
 }
 
-type AsciicastV2 struct {
+type Header struct {
 	Version   int      `json:"version"`
 	Width     int      `json:"width"`
 	Height    int      `json:"height"`
@@ -59,20 +59,6 @@ func NewAsciicast(width, height int, duration float64, command, title string, fr
 		Stdout:    frames,
 	}
 }
-
-// func Save(asciicast *Asciicast, path string) error {
-// 	bytes, err := json.MarshalIndent(asciicast, "", "  ")
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	err = ioutil.WriteFile(path, bytes, 0644)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
 
 // asciinema play file.json
 // asciinema play https://asciinema.org/a/123.json

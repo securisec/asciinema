@@ -1,12 +1,14 @@
 package asciinema
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/signal"
 	"strings"
 
-	asciinemaapi "github.com/securisec/asciinema/v2/api"
+	"github.com/olivere/ndjson"
 	"github.com/securisec/asciinema/v2/asciicast"
 	"github.com/securisec/asciinema/v2/commands"
 	"github.com/securisec/asciinema/v2/util"
@@ -48,7 +50,7 @@ func (o *Options) Play(cast *asciicast.Asciicast) error {
 }
 
 // Rec records the terminal and returns the asciicast and error.
-func (o *Options) Rec() (asciicast.Asciicast, error) {
+func (o *Options) Rec() (*asciicast.Asciicast, *bytes.Buffer, error) {
 	initAsciinema()
 	command := util.FirstNonBlank(os.Getenv("SHELL"), cfg.RecordCommand())
 	title := o.Title
@@ -60,8 +62,38 @@ func (o *Options) Rec() (asciicast.Asciicast, error) {
 	}
 
 	maxWait := o.MaxWait
-	cmd := commands.NewRecordCommand(api, env)
-	return cmd.Execute(command, title, assumeYes, maxWait)
+	cmd := commands.NewRecordCommand(env)
+	cast, err := cmd.Execute(command, title, assumeYes, maxWait)
+	if err != nil {
+		return &asciicast.Asciicast{}, nil, err
+	}
+
+	var buf bytes.Buffer
+	r := ndjson.NewWriter(&buf)
+
+	header := &asciicast.Header{
+		Version:   cast.Version,
+		Command:   cast.Command,
+		Title:     cast.Title,
+		Width:     cast.Width,
+		Height:    cast.Height,
+		Timestamp: cast.Timestamp,
+		Duration:  cast.Duration,
+		Env:       cast.Env,
+	}
+
+	// add header
+	enc := json.NewEncoder(&buf)
+	if err := enc.Encode(&header); err != nil {
+		return &asciicast.Asciicast{}, nil, err
+	}
+	for _, f := range cast.Stdout {
+		if err := r.Encode([]interface{}{f.Time, "o", string(f.EventData)}); err != nil {
+			panic(err)
+		}
+	}
+
+	return &cast, &buf, nil
 }
 
 func initAsciinema() {
@@ -86,7 +118,6 @@ func initAsciinema() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	api = asciinemaapi.New(cfg.ApiUrl(), env["USER"], cfg.ApiToken(), Version)
 }
 
 const Version = "1.2.0"
@@ -109,6 +140,5 @@ func showCursorBack() {
 var (
 	env map[string]string
 	cfg *util.Config
-	api *asciinemaapi.AsciinemaAPI
 	err error
 )
