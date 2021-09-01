@@ -1,0 +1,7 @@
+
+Todo:
+  ☐ play function
+
+Archive:
+  ✔ fix recording time. it is not calculated correctly. @project(Todo)
+  ✔ format record to line demilited json @project(Todo)
