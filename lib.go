@@ -6,7 +6,6 @@ import (
 	"os/signal"
 	"strings"
 
-	asciinemaapi "github.com/securisec/asciinema/api"
 	"github.com/securisec/asciinema/asciicast"
 	"github.com/securisec/asciinema/commands"
 	"github.com/securisec/asciinema/util"
@@ -60,7 +59,7 @@ func (o *Options) Rec() (asciicast.Asciicast, error) {
 	}
 
 	maxWait := o.MaxWait
-	cmd := commands.NewRecordCommand(api, env)
+	cmd := commands.NewRecordCommand(env)
 	return cmd.Execute(command, title, assumeYes, maxWait)
 }
 
@@ -86,7 +85,6 @@ func initAsciinema() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	api = asciinemaapi.New(cfg.ApiUrl(), env["USER"], cfg.ApiToken(), Version)
 }
 
 const Version = "1.2.0"
@@ -109,6 +107,5 @@ func showCursorBack() {
 var (
 	env map[string]string
 	cfg *util.Config
-	api *asciinemaapi.AsciinemaAPI
 	err error
 )

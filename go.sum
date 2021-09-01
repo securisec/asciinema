@@ -1,5 +1,6 @@
-github.com/creack/pty v1.1.7 h1:6pwm8kMQKCmgUg0ZHTm5+/YvRK0s3THD/28+T6/kk4A=
 github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7DoTY=
+github.com/creack/pty v1.1.15 h1:cKRCLMj3Ddm54bKSpemfQ8AtYFBhAI2MPmdys22fBdc=
+github.com/creack/pty v1.1.15/go.mod h1:MOBLtS5ELjhRRrroQr9kyvTxUAFNvYEK993ew/Vr4O4=
 github.com/creack/termios v0.0.0-20160714173321-88d0029e36a1 h1:3ZFknr3UZk2E18CuCeA0NMRk226zM/slMEFOmJTtJjI=
 github.com/creack/termios v0.0.0-20160714173321-88d0029e36a1/go.mod h1:141QqpYDZtzU1VJMRHPU6ZWkn9K5cE6X8elajH9hJk4=
 github.com/kr/pty v1.1.8 h1:AkaSdXYQOWeaO3neb8EM634ahkXXe3jYbVh/F9lq+GI=
